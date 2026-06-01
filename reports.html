@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports – Shree Sharada TMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    .report-nav { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-bottom:24px; }
+    .report-nav-item { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); padding:18px; cursor:pointer; transition:var(--transition); text-align:center; }
+    .report-nav-item:hover { border-color:var(--blue); transform:translateY(-2px); box-shadow:var(--shadow-md); }
+    .report-nav-item.active { border-color:var(--blue); background:#eff6ff; }
+    .report-nav-item .rni { font-size:26px; margin-bottom:8px; }
+    .report-nav-item .rnt { font-size:13px; font-weight:600; color:var(--text-primary); }
+    .report-nav-item .rns { font-size:11px; color:var(--text-muted); margin-top:2px; }
+    .report-panel { display:none; }
+    .report-panel.active { display:block; }
+    .report-filter-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+    .revenue-trend { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+    .kpi-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-bottom:20px; }
+    .kpi-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; text-align:center; box-shadow:var(--shadow-sm); }
+    .kpi-card .kval { font-size:24px; font-family:'Playfair Display',serif; font-weight:700; }
+    .kpi-card .klbl { font-size:11px; color:var(--text-muted); margin-top:3px; }
+  </style>
+</head>
+<body data-page="reports">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+    <div class="brand-text"><span class="brand-name">Shree Sharada</span><span class="brand-sub">Tuition Centre</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-label">MAIN</span>
+      <a href="index.html"      class="nav-item"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a href="students.html"   class="nav-item"><i class="fas fa-user-graduate"></i><span>Students</span></a>
+      <a href="attendance.html" class="nav-item"><i class="fas fa-clipboard-check"></i><span>Attendance</span></a>
+      <a href="fees.html"       class="nav-item"><i class="fas fa-rupee-sign"></i><span>Fee Management</span></a>
+      <a href="receipts.html"   class="nav-item"><i class="fas fa-receipt"></i><span>Receipts</span></a>
+      <a href="reports.html"    class="nav-item active"><i class="fas fa-chart-bar"></i><span>Reports</span></a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">SYSTEM</span>
+      <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+      <a href="login.html"    class="nav-item"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </div>
+  </nav>
+</aside>
+
+<div class="main-wrapper" id="mainWrapper">
+  <header class="topnav">
+    <div class="topnav-left">
+      <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+      <div class="breadcrumb-wrap"><span class="bc-page">Reports</span><span class="bc-date" id="currentDate"></span></div>
+    </div>
+    <div class="topnav-right">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon" id="themeIcon"></i></button>
+      <div class="notif-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></div>
+      <div class="user-pill">
+        <div class="user-avatar">A</div>
+        <div class="user-info"><span class="user-name">Admin</span><span class="user-role">Administrator</span></div>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-content">
+
+    <div class="page-header">
+      <div><h1>Reports & Analytics</h1><p>Generate comprehensive reports for students, attendance and fees</p></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn-secondary" data-export="excel"><i class="fas fa-file-excel"></i> Export Excel</button>
+        <button class="btn-secondary" data-export="pdf"><i class="fas fa-file-pdf"></i> Export PDF</button>
+      </div>
+    </div>
+
+    <!-- REPORT TYPE NAV -->
+    <div class="report-nav">
+      <div class="report-nav-item active" onclick="showReport('student',this)">
+        <div class="rni">👨‍🎓</div>
+        <div class="rnt">Student Reports</div>
+        <div class="rns">Active, inactive, class-wise</div>
+      </div>
+      <div class="report-nav-item" onclick="showReport('attendance',this)">
+        <div class="rni">📋</div>
+        <div class="rnt">Attendance Reports</div>
+        <div class="rns">Daily, monthly, %</div>
+      </div>
+      <div class="report-nav-item" onclick="showReport('fee',this)">
+        <div class="rni">💰</div>
+        <div class="rnt">Fee Reports</div>
+        <div class="rns">Collection, dues, revenue</div>
+      </div>
+      <div class="report-nav-item" onclick="showReport('revenue',this)">
+        <div class="rni">📈</div>
+        <div class="rnt">Revenue Report</div>
+        <div class="rns">Monthly trends</div>
+      </div>
+    </div>
+
+    <!-- ── STUDENT REPORT ── -->
+    <div class="report-panel active" id="panel-student">
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="kval" style="color:var(--blue)">342</div><div class="klbl">Total Students</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--green)">316</div><div class="klbl">Active Students</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--red)">26</div><div class="klbl">Inactive Students</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--purple)">8</div><div class="klbl">New This Month</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--orange)">6</div><div class="klbl">Classes Running</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div class="chart-card">
+          <div class="card-header-row"><h3>Class-wise Distribution</h3></div>
+          <canvas id="rptClassChart" height="240"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="card-header-row"><h3>Gender Distribution</h3></div>
+          <canvas id="rptGenderChart" height="240"></canvas>
+        </div>
+      </div>
+
+      <div class="report-filter-row">
+        <select class="filter-select" id="sRptClass"><option value="">All Classes</option><option>Class 5</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option></select>
+        <select class="filter-select"><option value="">All Status</option><option>Active</option><option>Inactive</option></select>
+        <button class="btn-secondary" data-export="excel"><i class="fas fa-file-excel"></i> Export</button>
+      </div>
+
+      <div class="data-card">
+        <div class="data-card-header"><h3 style="font-size:15px;font-weight:600">Student List</h3><span style="font-size:13px;color:var(--text-muted)">342 students total</span></div>
+        <div style="overflow-x:auto">
+          <table class="full-table" id="studentRptTable">
+            <thead><tr><th>Student</th><th>Class</th><th>Parent</th><th>Mobile</th><th>Admission</th><th>Fee/mo</th><th>Status</th></tr></thead>
+            <tbody id="studentRptBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ATTENDANCE REPORT ── -->
+    <div class="report-panel" id="panel-attendance">
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="kval" style="color:var(--green)">87.1%</div><div class="klbl">Avg Attendance</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--blue)">298</div><div class="klbl">Present Today</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--red)">44</div><div class="klbl">Absent Today</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--orange)">12</div><div class="klbl">Below 75% Att.</div></div>
+      </div>
+
+      <div class="chart-card mb-24">
+        <div class="card-header-row">
+          <h3>Monthly Attendance Trend</h3>
+          <select class="filter-select" style="font-size:12px;padding:6px 10px">
+            <option>Class 8</option><option>Class 9</option><option>Class 10</option><option>All Classes</option>
+          </select>
+        </div>
+        <canvas id="attTrendChart" height="200"></canvas>
+      </div>
+
+      <div class="report-filter-row">
+        <input type="month" class="filter-select" value="2026-06" />
+        <select class="filter-select"><option value="">All Classes</option><option>Class 8</option><option>Class 9</option><option>Class 10</option></select>
+        <button class="btn-secondary" data-export="excel"><i class="fas fa-file-excel"></i> Export</button>
+        <button class="btn-secondary" data-export="pdf"><i class="fas fa-file-pdf"></i> PDF</button>
+      </div>
+
+      <div class="data-card">
+        <div class="data-card-header"><h3 style="font-size:15px;font-weight:600">Attendance Summary</h3></div>
+        <div style="overflow-x:auto">
+          <table class="full-table">
+            <thead><tr><th>Student</th><th>Class</th><th>Present</th><th>Absent</th><th>Total Days</th><th>%</th><th>Status</th></tr></thead>
+            <tbody id="attRptBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FEE REPORT ── -->
+    <div class="report-panel" id="panel-fee">
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="kval" style="color:var(--green)">₹84,500</div><div class="klbl">Collected This Month</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--red)">₹21,800</div><div class="klbl">Outstanding Dues</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--orange)">38</div><div class="klbl">Students with Dues</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--blue)">77%</div><div class="klbl">Collection Rate</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px">
+        <div class="chart-card">
+          <div class="card-header-row"><h3>Monthly Revenue Trend</h3></div>
+          <canvas id="revenueChart" height="220"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="card-header-row"><h3>Payment Mode Split</h3></div>
+          <canvas id="payModeChart" height="220"></canvas>
+        </div>
+      </div>
+
+      <div class="report-filter-row">
+        <input type="month" class="filter-select" value="2026-06" />
+        <select class="filter-select"><option>All Status</option><option>Paid</option><option>Partially Paid</option><option>Due</option></select>
+        <button class="btn-secondary" data-export="excel"><i class="fas fa-file-excel"></i> Export</button>
+      </div>
+
+      <div class="data-card">
+        <div class="data-card-header"><h3 style="font-size:15px;font-weight:600">Fee Collection Report</h3></div>
+        <div style="overflow-x:auto">
+          <table class="full-table">
+            <thead><tr><th>Student</th><th>Class</th><th>Month</th><th>Total Fee</th><th>Paid</th><th>Due</th><th>Mode</th><th>Status</th></tr></thead>
+            <tbody id="feeRptBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── REVENUE REPORT ── -->
+    <div class="report-panel" id="panel-revenue">
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="kval" style="color:var(--green)">₹9.24L</div><div class="klbl">Total Revenue (YTD)</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--blue)">₹84,500</div><div class="klbl">Best Month</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--purple)">+14%</div><div class="klbl">Growth vs Last Year</div></div>
+        <div class="kpi-card"><div class="kval" style="color:var(--teal)">₹77k</div><div class="klbl">Avg Monthly Rev.</div></div>
+      </div>
+
+      <div class="chart-card mb-24">
+        <div class="card-header-row">
+          <h3>Annual Revenue Overview</h3>
+          <div class="chart-period-btns">
+            <button class="period-btn active">2026</button>
+            <button class="period-btn">2025</button>
+          </div>
+        </div>
+        <canvas id="annualChart" height="240"></canvas>
+      </div>
+
+      <div class="data-card">
+        <div class="data-card-header"><h3 style="font-size:15px;font-weight:600">Monthly Revenue Breakdown</h3></div>
+        <div style="overflow-x:auto">
+          <table class="full-table">
+            <thead><tr><th>Month</th><th>Total Students</th><th>Revenue Expected</th><th>Revenue Collected</th><th>Outstanding</th><th>Collection %</th></tr></thead>
+            <tbody id="revenueRptBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  <footer class="page-footer">© 2026 Shree Sharada Tuition Centre</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+  function showReport(name, el) {
+    document.querySelectorAll('.report-nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.report-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+  }
+
+  const months = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+  const revenue = [68000,71000,74500,72000,76000,79000,81200,78000,82000,80500,83000,84500];
+  const pending  = [14000,12000,10800,13000,11000,9500,8800,10200,9000,9500,8000,7400];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Chart.defaults.font.family = "'DM Sans', system-ui, sans-serif";
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const textClr = isDark ? '#8b949e' : '#64748b';
+    const gridClr = isDark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.06)';
+
+    // Class chart
+    new Chart(document.getElementById('rptClassChart'), {
+      type: 'bar',
+      data: { labels: ['Class 5','Class 6','Class 7','Class 8','Class 9','Class 10'],
+        datasets: [{ data:[28,42,56,63,71,82], backgroundColor:['#0d9488','#2563eb','#7c3aed','#ea580c','#dc2626','#16a34a'], borderRadius:6, borderSkipped:false }]},
+      options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false},ticks:{color:textClr}},y:{grid:{color:gridClr},ticks:{color:textClr}}}}
+    });
+
+    // Gender chart
+    new Chart(document.getElementById('rptGenderChart'), {
+      type:'doughnut',
+      data: { labels:['Male','Female'],datasets:[{data:[187,155],backgroundColor:['#2563eb','#ec4899'],borderWidth:0,hoverOffset:6}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{position:'bottom'}}}
+    });
+
+    // Attendance trend
+    new Chart(document.getElementById('attTrendChart'), {
+      type:'line',
+      data:{ labels:months, datasets:[
+        {label:'Present %',data:[88,86,90,84,87,89,91,85,88,86,90,87],borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.1)',fill:true,tension:.4,pointRadius:4},
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:textClr}},y:{min:70,max:100,grid:{color:gridClr},ticks:{color:textClr,callback:v=>v+'%'}}}}
+    });
+
+    // Revenue chart
+    new Chart(document.getElementById('revenueChart'), {
+      type:'bar',
+      data:{ labels:months, datasets:[
+        {label:'Collected',data:revenue,backgroundColor:'rgba(37,99,235,.8)',borderRadius:5,borderSkipped:false},
+        {label:'Pending',data:pending,backgroundColor:'rgba(234,88,12,.6)',borderRadius:5,borderSkipped:false},
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:textClr}}},scales:{x:{grid:{display:false},ticks:{color:textClr}},y:{grid:{color:gridClr},ticks:{color:textClr,callback:v=>'₹'+(v/1000)+'k'}}}}
+    });
+
+    // Payment mode
+    new Chart(document.getElementById('payModeChart'), {
+      type:'pie',
+      data:{labels:['Cash','UPI','Bank','Cheque'],datasets:[{data:[40,35,18,7],backgroundColor:['#16a34a','#2563eb','#7c3aed','#ea580c'],borderWidth:3,borderColor:'#ffffff'}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}
+    });
+
+    // Annual chart
+    new Chart(document.getElementById('annualChart'), {
+      type:'line',
+      data:{labels:months,datasets:[
+        {label:'2026',data:revenue,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.1)',fill:true,tension:.4,pointRadius:5,pointBackgroundColor:'#2563eb'},
+        {label:'2025',data:revenue.map(v=>Math.round(v*0.88)),borderColor:'#94a3b8',backgroundColor:'transparent',tension:.4,pointRadius:3,borderDash:[5,3]},
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:textClr}}},scales:{x:{grid:{display:false},ticks:{color:textClr}},y:{grid:{color:gridClr},ticks:{color:textClr,callback:v=>'₹'+(v/1000)+'k'}}}}
+    });
+
+    // Populate student report
+    const students = JSON.parse(localStorage.getItem('ssTmsStudents') || 'null') || StudentManager.sampleData;
+    const tbody = document.getElementById('studentRptBody');
+    students.forEach(s => {
+      const init = s.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td><div class="student-cell"><div class="s-avatar blue">${init}</div><div><b>${s.name}</b><small>${s.id}</small></div></div></td>
+          <td>${s.grade}</td><td>${s.parentName}</td><td>${s.mobile}</td>
+          <td>${new Date(s.admDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</td>
+          <td>₹${s.fee.toLocaleString('en-IN')}</td>
+          <td>${s.status === 'Active' ? '<span class="badge-paid">Active</span>' : '<span class="badge-due">Inactive</span>'}</td>
+        </tr>`);
+    });
+
+    // Attendance report body
+    const attBody = document.getElementById('attRptBody');
+    students.slice(0,12).forEach(s => {
+      const p = Math.floor(Math.random()*8)+18, total=26, pct=Math.round(p/total*100);
+      const attStatus = pct >= 85 ? '<span class="badge-present">Good</span>' : pct >= 75 ? '<span class="badge-partial">Average</span>' : '<span class="badge-due">Poor</span>';
+      const init = s.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      attBody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td><div class="student-cell"><div class="s-avatar teal">${init}</div><div><b>${s.name}</b></div></div></td>
+          <td>${s.grade}</td>
+          <td style="color:var(--green);font-weight:600">${p}</td>
+          <td style="color:var(--red);font-weight:600">${total-p}</td>
+          <td>${total}</td>
+          <td><div style="display:flex;align-items:center;gap:8px"><div style="width:60px;height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${pct>=85?'var(--green)':pct>=75?'var(--orange)':'var(--red)'};border-radius:3px"></div></div><b style="font-size:12px">${pct}%</b></div></td>
+          <td>${attStatus}</td>
+        </tr>`);
+    });
+
+    // Fee report
+    const feeBody = document.getElementById('feeRptBody');
+    const fees = JSON.parse(localStorage.getItem('ssTmsFees') || 'null') || FeeManager.samplePayments;
+    fees.forEach(p => {
+      let badge = p.status==='Paid'?'<span class="badge-paid">Paid</span>':p.status==='Partially Paid'?'<span class="badge-partial">Partial</span>':'<span class="badge-due">Due</span>';
+      feeBody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td><b>${p.name}</b></td><td>${p.grade}</td><td>${p.month}</td>
+          <td>₹${p.totalFee.toLocaleString('en-IN')}</td>
+          <td style="color:var(--green);font-weight:600">₹${p.paid.toLocaleString('en-IN')}</td>
+          <td style="color:${p.due>0?'var(--red)':'var(--green)'};font-weight:600">₹${p.due.toLocaleString('en-IN')}</td>
+          <td><span class="mode-tag">${p.mode}</span></td><td>${badge}</td>
+        </tr>`);
+    });
+
+    // Revenue report
+    const revBody = document.getElementById('revenueRptBody');
+    const mNames = ['July 2025','Aug 2025','Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026'];
+    const expectedFees = [82000,82000,82000,82000,82000,82000,85000,85000,85000,85000,106000,106000];
+    mNames.forEach((m, i) => {
+      const col = revenue[i], exp = expectedFees[i], due = exp - col, pct = Math.round(col/exp*100);
+      revBody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td><b>${m}</b></td>
+          <td>${310 + i * 4}</td>
+          <td>₹${exp.toLocaleString('en-IN')}</td>
+          <td style="color:var(--green);font-weight:600">₹${col.toLocaleString('en-IN')}</td>
+          <td style="color:${due>0?'var(--red)':'var(--green)'};font-weight:600">₹${due.toLocaleString('en-IN')}</td>
+          <td><div style="display:flex;align-items:center;gap:8px"><div style="width:60px;height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${pct>=90?'var(--green)':'var(--orange)'};border-radius:3px"></div></div><b style="font-size:12px">${pct}%</b></div></td>
+        </tr>`);
+    });
+  });
+</script>
+</body>
+</html>
