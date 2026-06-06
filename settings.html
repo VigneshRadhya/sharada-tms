@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings – Shree Sharada TMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    .toggle-switch { position:relative;display:inline-block;width:44px;height:24px; }
+    .toggle-switch input { opacity:0;width:0;height:0; }
+    .toggle-slider { position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:24px;transition:.3s; }
+    .toggle-slider:before { content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.2); }
+    .toggle-switch input:checked + .toggle-slider { background:var(--blue); }
+    .toggle-switch input:checked + .toggle-slider:before { transform:translateX(20px); }
+    .setting-row { display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border); }
+    .setting-row:last-child { border-bottom:none; }
+    .setting-row .sr-info b { display:block;font-size:14px;color:var(--text-primary); }
+    .setting-row .sr-info small { font-size:12px;color:var(--text-muted); }
+    .colour-chips { display:flex;gap:8px;flex-wrap:wrap; }
+    .colour-chip { width:28px;height:28px;border-radius:50%;cursor:pointer;transition:transform .2s;border:2px solid transparent; }
+    .colour-chip.selected { border-color:var(--text-primary);transform:scale(1.2); }
+    .avatar-upload { width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:white;cursor:pointer;position:relative;overflow:hidden; }
+    .avatar-upload:hover::after { content:'📷';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(0,0,0,.4);border-radius:50%; }
+    .backup-btn { background:linear-gradient(135deg,var(--blue),var(--purple));color:white;padding:10px 20px;border-radius:9px;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s; }
+    .backup-btn:hover { transform:translateY(-1px); }
+    .danger-zone { border:1.5px solid #fee2e2;border-radius:var(--radius);padding:20px;margin-top:20px; }
+    .danger-zone h4 { color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:8px; }
+  </style>
+</head>
+<body data-page="settings">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+    <div class="brand-text"><span class="brand-name">Shree Sharada</span><span class="brand-sub">Tuition Centre</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-label">MAIN</span>
+      <a href="index.html"      class="nav-item"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a href="students.html"   class="nav-item"><i class="fas fa-user-graduate"></i><span>Students</span></a>
+      <a href="attendance.html" class="nav-item"><i class="fas fa-clipboard-check"></i><span>Attendance</span></a>
+      <a href="fees.html"       class="nav-item"><i class="fas fa-rupee-sign"></i><span>Fee Management</span></a>
+      <a href="receipts.html"   class="nav-item"><i class="fas fa-receipt"></i><span>Receipts</span></a>
+      <a href="reports.html"    class="nav-item"><i class="fas fa-chart-bar"></i><span>Reports</span></a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">SYSTEM</span>
+      <a href="settings.html" class="nav-item active"><i class="fas fa-cog"></i><span>Settings</span></a>
+      <a href="login.html"    class="nav-item"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </div>
+  </nav>
+</aside>
+
+<div class="main-wrapper" id="mainWrapper">
+  <header class="topnav">
+    <div class="topnav-left">
+      <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+      <div class="breadcrumb-wrap"><span class="bc-page">Settings</span><span class="bc-date" id="currentDate"></span></div>
+    </div>
+    <div class="topnav-right">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon" id="themeIcon"></i></button>
+      <div class="notif-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></div>
+      <div class="user-pill">
+        <div class="user-avatar">A</div>
+        <div class="user-info"><span class="user-name">Admin</span><span class="user-role">Administrator</span></div>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <div class="page-header mb-24">
+      <div><h1>Settings</h1><p>Configure your tuition centre management system</p></div>
+    </div>
+
+    <div class="settings-grid">
+      <!-- SETTINGS SIDEBAR -->
+      <div class="settings-sidebar">
+        <div class="settings-tab active" onclick="showTab('centre',this)"><i class="fas fa-school"></i> Centre Info</div>
+        <div class="settings-tab" onclick="showTab('profile',this)"><i class="fas fa-user-circle"></i> My Profile</div>
+        <div class="settings-tab" onclick="showTab('fees',this)"><i class="fas fa-rupee-sign"></i> Fee Settings</div>
+        <div class="settings-tab" onclick="showTab('appearance',this)"><i class="fas fa-palette"></i> Appearance</div>
+        <div class="settings-tab" onclick="showTab('notifications',this)"><i class="fas fa-bell"></i> Notifications</div>
+        <div class="settings-tab" onclick="showTab('users',this)"><i class="fas fa-users-cog"></i> Users & Roles</div>
+        <div class="settings-tab" onclick="showTab('backup',this)"><i class="fas fa-database"></i> Backup & Data</div>
+        <div class="settings-tab" onclick="showTab('security',this)"><i class="fas fa-shield-alt"></i> Security</div>
+      </div>
+
+      <!-- SETTINGS PANELS -->
+      <div>
+
+        <!-- CENTRE INFO -->
+        <div class="settings-panel" id="tab-centre">
+          <h2>Centre Information</h2>
+          <p class="settings-desc">Update your tuition centre's basic details and branding</p>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Centre Name</label>
+              <input type="text" value="Shree Sharada Tuition Centre" />
+            </div>
+            <div class="form-group">
+              <label>Registration Number</label>
+              <input type="text" value="MH-TMS-2024-001" />
+            </div>
+            <div class="form-group">
+              <label>Contact Number</label>
+              <input type="tel" value="9876543200" />
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" value="admin@shreesharada.edu.in" />
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label>Full Address</label>
+              <textarea>123, Shivaji Nagar, Near Central Park, Pune – 411005, Maharashtra</textarea>
+            </div>
+            <div class="form-group">
+              <label>Academic Year</label>
+              <select>
+                <option selected>2025-2026</option>
+                <option>2026-2027</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Working Days per Week</label>
+              <select>
+                <option>5 Days</option>
+                <option selected>6 Days</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:10px">
+            <button class="btn-primary" onclick="ToastManager.show('Centre info saved!','success')"><i class="fas fa-save"></i> Save Changes</button>
+            <button class="btn-secondary">Reset</button>
+          </div>
+        </div>
+
+        <!-- MY PROFILE -->
+        <div class="settings-panel" id="tab-profile" style="display:none">
+          <h2>My Profile</h2>
+          <p class="settings-desc">Update your personal information and profile photo</p>
+          <div style="display:flex;align-items:center;gap:20px;margin-bottom:24px">
+            <div class="avatar-upload" title="Click to change photo">A</div>
+            <div>
+              <b style="font-size:15px">Admin User</b>
+              <p style="color:var(--text-muted);font-size:13px">Administrator · admin@shreesharada.edu.in</p>
+              <button class="btn-secondary" style="margin-top:8px;padding:6px 14px;font-size:12px"><i class="fas fa-upload"></i> Upload Photo</button>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" value="Admin User" />
+            </div>
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" value="admin" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" value="admin@shreesharada.edu.in" />
+            </div>
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="tel" value="9876543200" />
+            </div>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:20px 0">
+          <h3 style="font-size:15px;font-weight:600;margin-bottom:14px">Change Password</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+              <label>Confirm New Password</label>
+              <input type="password" placeholder="••••••••" />
+            </div>
+          </div>
+          <button class="btn-primary" style="margin-top:8px" onclick="ToastManager.show('Profile updated!','success')"><i class="fas fa-save"></i> Save Profile</button>
+        </div>
+
+        <!-- FEE SETTINGS -->
+        <div class="settings-panel" id="tab-fees" style="display:none">
+          <h2>Fee Configuration</h2>
+          <p class="settings-desc">Set default fee structure and due date rules</p>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fee Due Date (each month)</label>
+              <select>
+                <option>5th of month</option>
+                <option selected>10th of month</option>
+                <option>15th of month</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Late Fee (₹)</label>
+              <input type="number" value="50" />
+            </div>
+            <div class="form-group">
+              <label>Receipt Number Prefix</label>
+              <input type="text" value="SSC" />
+            </div>
+            <div class="form-group">
+              <label>Receipt Number Start</label>
+              <input type="number" value="1" />
+            </div>
+          </div>
+
+          <h3 style="font-size:14px;font-weight:600;margin:20px 0 12px;color:var(--text-secondary)">Default Monthly Fees by Class</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+            <div class="form-group"><label>Class 5</label><input type="number" value="1000" /></div>
+            <div class="form-group"><label>Class 6</label><input type="number" value="1200" /></div>
+            <div class="form-group"><label>Class 7</label><input type="number" value="1400" /></div>
+            <div class="form-group"><label>Class 8</label><input type="number" value="1500" /></div>
+            <div class="form-group"><label>Class 9</label><input type="number" value="1800" /></div>
+            <div class="form-group"><label>Class 10</label><input type="number" value="2000" /></div>
+          </div>
+          <button class="btn-primary" style="margin-top:16px" onclick="ToastManager.show('Fee settings saved!','success')"><i class="fas fa-save"></i> Save Settings</button>
+        </div>
+
+        <!-- APPEARANCE -->
+        <div class="settings-panel" id="tab-appearance" style="display:none">
+          <h2>Appearance</h2>
+          <p class="settings-desc">Customize the look and feel of your dashboard</p>
+
+          <div class="setting-row">
+            <div class="sr-info"><b>Dark Mode</b><small>Switch between light and dark theme</small></div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="darkToggle" onchange="ThemeManager.toggle()" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-row">
+            <div class="sr-info"><b>Compact Sidebar</b><small>Show icons only in sidebar</small></div>
+            <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div class="sr-info"><b>Accent Colour</b><small>Choose primary colour theme</small></div>
+            <div class="colour-chips">
+              <div class="colour-chip selected" style="background:#2563eb" onclick="selectChip(this)"></div>
+              <div class="colour-chip" style="background:#7c3aed" onclick="selectChip(this)"></div>
+              <div class="colour-chip" style="background:#0d9488" onclick="selectChip(this)"></div>
+              <div class="colour-chip" style="background:#16a34a" onclick="selectChip(this)"></div>
+              <div class="colour-chip" style="background:#dc2626" onclick="selectChip(this)"></div>
+              <div class="colour-chip" style="background:#ea580c" onclick="selectChip(this)"></div>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="sr-info"><b>Font Size</b><small>Default text size across the app</small></div>
+            <select class="filter-select" style="font-size:12px">
+              <option>Small (13px)</option><option selected>Medium (14px)</option><option>Large (16px)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div class="settings-panel" id="tab-notifications" style="display:none">
+          <h2>Notification Preferences</h2>
+          <p class="settings-desc">Control which alerts and reminders you receive</p>
+          <div class="setting-row"><div class="sr-info"><b>Fee Due Reminders</b><small>Notify when student fees are due</small></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><b>Overdue Fee Alerts</b><small>Alert when fee is overdue by more than 5 days</small></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><b>New Admission Notification</b><small>Notify when a new student is admitted</small></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><b>Low Attendance Alert</b><small>Alert when student drops below 75% attendance</small></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><b>Daily Attendance Summary</b><small>Receive daily attendance email at 2 PM</small></div><label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><b>Monthly Fee Report</b><small>Auto-generate monthly collection report</small></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+
+          <hr style="border:none;border-top:1px solid var(--border);margin:20px 0">
+          <h3 style="font-size:14px;font-weight:600;margin-bottom:14px">Future Integrations <span style="background:#fff7ed;color:#ea580c;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:6px">Coming Soon</span></h3>
+          <div class="setting-row" style="opacity:.5"><div class="sr-info"><b>WhatsApp Notifications</b><small>Send fee reminders via WhatsApp</small></div><label class="toggle-switch"><input type="checkbox" disabled><span class="toggle-slider"></span></label></div>
+          <div class="setting-row" style="opacity:.5"><div class="sr-info"><b>SMS Alerts</b><small>Send attendance alerts via SMS</small></div><label class="toggle-switch"><input type="checkbox" disabled><span class="toggle-slider"></span></label></div>
+          <button class="btn-primary" style="margin-top:16px" onclick="ToastManager.show('Notification preferences saved!','success')"><i class="fas fa-save"></i> Save Preferences</button>
+        </div>
+
+        <!-- USERS & ROLES -->
+        <div class="settings-panel" id="tab-users" style="display:none">
+          <h2>Users & Role Management</h2>
+          <p class="settings-desc">Manage staff accounts and their access permissions</p>
+          <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+            <button class="btn-primary" onclick="ToastManager.show('Add user form coming in backend integration!','info')"><i class="fas fa-plus"></i> Add User</button>
+          </div>
+          <div class="data-card" style="margin-bottom:20px">
+            <table class="full-table">
+              <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Last Login</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div class="student-cell"><div class="s-avatar blue">A</div><div><b>Admin User</b><small>admin@shreesharada.edu.in</small></div></div></td>
+                  <td>admin</td><td><span style="background:#ede9fe;color:#7c3aed;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600">Admin</span></td>
+                  <td>Just now</td><td><span class="badge-paid">Active</span></td>
+                  <td><div class="action-btns"><button class="btn-icon edit"><i class="fas fa-edit"></i></button></div></td>
+                </tr>
+                <tr>
+                  <td><div class="student-cell"><div class="s-avatar green">S</div><div><b>Staff Member</b><small>staff@shreesharada.edu.in</small></div></div></td>
+                  <td>staff</td><td><span style="background:#dcfce7;color:#16a34a;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600">Staff</span></td>
+                  <td>Yesterday</td><td><span class="badge-paid">Active</span></td>
+                  <td><div class="action-btns"><button class="btn-icon edit"><i class="fas fa-edit"></i></button><button class="btn-icon delete"><i class="fas fa-trash"></i></button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">Role Permissions</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
+              <h4 style="font-size:13px;color:var(--purple);margin-bottom:10px"><i class="fas fa-shield-alt"></i> Admin</h4>
+              <ul style="list-style:none;font-size:12px;color:var(--text-secondary)">
+                <li style="padding:4px 0;display:flex;gap:7px;align-items:center"><i class="fas fa-check" style="color:var(--green)"></i> Full student management</li>
+                <li style="padding:4px 0;display:flex;gap:7px;align-items:center"><i class="fas fa-check" style="color:var(--green)"></i> Manage attendance</li>
+                <li style="padding:4px 0;display:flex;gap:7px;align-items:center"><i class="fas fa-check" style="color:var(--green)"></i> Collect and manage fees</li>
+                <li style="padding:4px 0;display:flex;gap:7px;align-items:center"><i class="fas fa-check" style="color:var(--green)"></i> Generate all reports</li>
+                <li style="padding:4px 0;display:flex;gap:7px;align-items:center"><i class="fas fa-check" style="color:var(--green)"></i> System settings</li>
+              </ul>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
+              <h4 style="font-size:13px;color:var(--green);margin-bottom:10px"><i class="fas fa-user-tie"></i> Staff</h4>
+              <ul style="list-style:none;font-size:12px;color:var(--text-secondary)">
+                <li style="padding:4px 0;display:flex;gap:7px;align-items:center"><i class="fas fa-check" style="color:var(--green)"></i> View student profiles</li>
+                <li style="padding:4px 0;display:flex;gap:7px;align-items:center"><i class="fas fa-check" style="color:var(--green)"></i> Mark attendance</li>
+                <li style="padding:4px 0;display:flex;gap:7px;align-items:center"><i class="fas fa-check" style="color:var(--green)"></i> Collect fee payments</li>
+                <li style="padding:4px 0;display:flex;gap:7px;align-items:center"><i class="fas fa-times" style="color:var(--red)"></i> Cannot delete students</li>
+                <li style="padding:4px 0;display:flex;gap:7px;align-items:center"><i class="fas fa-times" style="color:var(--red)"></i> Cannot change settings</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- BACKUP -->
+        <div class="settings-panel" id="tab-backup" style="display:none">
+          <h2>Backup & Data Management</h2>
+          <p class="settings-desc">Manage your data backups and imports</p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center">
+              <i class="fas fa-cloud-upload-alt" style="font-size:32px;color:var(--blue);margin-bottom:12px;display:block"></i>
+              <h4 style="font-size:14px;margin-bottom:6px">Export All Data</h4>
+              <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Download complete backup as JSON</p>
+              <button class="backup-btn" onclick="exportData()"><i class="fas fa-download"></i> Export Backup</button>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center">
+              <i class="fas fa-cloud-download-alt" style="font-size:32px;color:var(--green);margin-bottom:12px;display:block"></i>
+              <h4 style="font-size:14px;margin-bottom:6px">Import Data</h4>
+              <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Restore from a previous backup</p>
+              <button class="backup-btn" style="background:linear-gradient(135deg,var(--green),var(--teal))"><i class="fas fa-upload"></i> Import Backup</button>
+            </div>
+          </div>
+
+          <h3 style="font-size:14px;font-weight:600;margin-bottom:12px">Auto-Backup Settings</h3>
+          <div class="setting-row"><div class="sr-info"><b>Auto Backup</b><small>Automatically backup data daily</small></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><b>Backup Frequency</b></div><select class="filter-select" style="font-size:12px"><option selected>Daily</option><option>Weekly</option><option>Monthly</option></select></div>
+
+          <div class="danger-zone">
+            <h4><i class="fas fa-exclamation-triangle"></i> Danger Zone</h4>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px">These actions are irreversible. Please be absolutely sure.</p>
+            <div style="display:flex;gap:10px">
+              <button class="btn-danger" onclick="if(confirm('Clear all student data? This cannot be undone!')){localStorage.clear();ToastManager.show('All local data cleared.','error')}"><i class="fas fa-trash"></i> Clear All Local Data</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECURITY -->
+        <div class="settings-panel" id="tab-security" style="display:none">
+          <h2>Security Settings</h2>
+          <p class="settings-desc">Configure authentication and security options</p>
+          <div class="setting-row"><div class="sr-info"><b>Two-Factor Authentication</b><small>Require OTP on login</small></div><label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><b>Session Timeout</b><small>Auto logout after inactivity</small></div><select class="filter-select" style="font-size:12px"><option>30 minutes</option><option selected>1 hour</option><option>4 hours</option></select></div>
+          <div class="setting-row"><div class="sr-info"><b>Login Attempt Limit</b><small>Lock after failed attempts</small></div><select class="filter-select" style="font-size:12px"><option selected>5 attempts</option><option>3 attempts</option><option>10 attempts</option></select></div>
+          <div class="setting-row"><div class="sr-info"><b>Password Expiry</b><small>Force password change after 90 days</small></div><label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div class="sr-info"><b>Audit Logging</b><small>Log all admin actions</small></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-top:20px">
+            <h4 style="font-size:13px;font-weight:600;margin-bottom:10px"><i class="fas fa-history" style="color:var(--blue)"></i> Recent Login Activity</h4>
+            <div style="font-size:12px;color:var(--text-secondary)">
+              <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span>🟢 Admin login – Chrome, Windows</span><span>Just now · 192.168.1.10</span></div>
+              <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span>🟢 Staff login – Firefox, Android</span><span>2 hours ago · 192.168.1.24</span></div>
+              <div style="padding:8px 0;display:flex;justify-content:space-between"><span>🔴 Failed attempt – Unknown</span><span>Yesterday · 203.45.67.89</span></div>
+            </div>
+          </div>
+          <button class="btn-primary" style="margin-top:16px" onclick="ToastManager.show('Security settings saved!','success')"><i class="fas fa-save"></i> Save Settings</button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+  <footer class="page-footer">© 2026 Shree Sharada Tuition Centre</footer>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script>
+  function showTab(name, el) {
+    document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.settings-panel').forEach(p => p.style.display = 'none');
+    document.getElementById('tab-' + name).style.display = 'block';
+  }
+
+  function selectChip(el) {
+    document.querySelectorAll('.colour-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const color = el.style.background;
+    document.documentElement.style.setProperty('--blue', color);
+    ToastManager.show('Accent colour updated!', 'success');
+  }
+
+  function exportData() {
+    const data = {
+      students:   JSON.parse(localStorage.getItem('ssTmsStudents') || '[]'),
+      attendance: JSON.parse(localStorage.getItem('ssTmsAttendance') || '{}'),
+      fees:       JSON.parse(localStorage.getItem('ssTmsFees') || '[]'),
+      exportDate: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `ShreeSharada-TMS-Backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    ToastManager.show('Backup exported successfully!', 'success');
+  }
+
+  // Sync dark toggle with current theme
+  document.addEventListener('DOMContentLoaded', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const toggle = document.getElementById('darkToggle');
+    if (toggle) toggle.checked = isDark;
+  });
+</script>
+</body>
+</html>
