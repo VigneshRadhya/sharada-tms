@@ -1,0 +1,52 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "framework": null,
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/login.html"
+    },
+    {
+      "src": "/login",
+      "dest": "/login.html"
+    },
+    {
+      "src": "/index",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/students",
+      "dest": "/students.html"
+    },
+    {
+      "src": "/attendance",
+      "dest": "/attendance.html"
+    },
+    {
+      "src": "/fees",
+      "dest": "/fees.html"
+    },
+    {
+      "src": "/receipts",
+      "dest": "/receipts.html"
+    },
+    {
+      "src": "/reports",
+      "dest": "/reports.html"
+    },
+    {
+      "src": "/settings",
+      "dest": "/settings.html"
+    },
+    {
+      "src": "/(.*)\\.html$",
+      "dest": "/$1.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
